@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">TaskMate</string>
+    <string name="open_drawer">Открыть меню</string>
+    <string name="close_drawer">Закрыть меню</string>
+</resources>

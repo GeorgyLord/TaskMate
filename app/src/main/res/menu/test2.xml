@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    tools:ignore="ExtraText">
+    tools:showIn="navigation_view"
+    <item android:title="Cat">
+        <menu>
+            <item android:title="item1" android:id="@+id/item1"/>
+            <item android:title="item2" android:id="@+id/item2"/>
+            <item android:title="item3" android:id="@+id/item3"/>
+            <item android:title="item4" android:id="@+id/item4"/>
+        </menu>
+    </item>
+</menu>

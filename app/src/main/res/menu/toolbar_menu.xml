@@ -1,0 +1,19 @@
+<!-- res/menu/toolbar_menu.xml -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_search"
+        android:title="Поиск"
+        app:showAsAction="ifRoom" /> <!-- Показывать в Toolbar, если есть место -->
+
+    <item
+        android:id="@+id/action_settings"
+        android:title="Настройки"
+        app:showAsAction="never" /> <!-- Всегда скрывать в выпадающем меню (три точки) -->
+
+    <item
+        android:id="@+id/action_exit"
+        android:title="Выход"
+        app:showAsAction="never" />
+</menu>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/item_home" android:title="Главная"/>
+    <item android:id="@+id/item_categories" android:title="Категории"/>
+    <item android:id="@+id/item_settings" android:title="Настройки"/>
+    <item
+        android:id="@+id/item_logout"
+        android:onClick="log_out_of_account"
+        android:title="Выйти из аккаунта" />
+</menu>

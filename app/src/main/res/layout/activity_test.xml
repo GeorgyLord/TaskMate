@@ -1,0 +1,529 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_window"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:openDrawer="start"
+    tools:context=".Test">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabAdd2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp"
+            android:contentDescription="Добавить"
+            app:srcCompat="@drawable/ic_add" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/colorPrimary"
+                android:minHeight="?attr/actionBarSize"
+                android:theme="?attr/actionBarTheme"
+                app:contentInsetStart="20dp"
+                app:title="Главное меню"
+                app:titleTextColor="#D3D3D3" />
+
+            <ScrollView
+                android:id="@+id/scrollView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fillViewport="true"
+                tools:ignore="MissingConstraints">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:background="#E0E0E0"
+                        android:padding="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginBottom="10dp"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/textView13"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Name task"
+                                    android:textSize="20dp"
+                                    tools:ignore="DuplicateIds" />
+
+                                <androidx.cardview.widget.CardView
+                                    android:layout_width="15dp"
+                                    android:layout_height="15dp"
+                                    android:layout_gravity="center|right"
+                                    app:cardBackgroundColor="#FF0000"
+                                    app:cardCornerRadius="15dp" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/textView14"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Short description"
+                                tools:ignore="DuplicateIds" />
+
+                            <View
+                                android:id="@+id/view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="1dp"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginBottom="2dp"
+                                android:background="#838383"
+                                tools:ignore="DuplicateIds" />
+
+                            <TextView
+                                android:id="@+id/textView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Deadline: 16 декбря 2025"
+                                tools:ignore="DuplicateIds" />
+
+                            <TextView
+                                android:id="@+id/textView2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Tags:"
+                                tools:ignore="DuplicateIds" />
+
+                        </LinearLayout>
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:background="#E0E0E0"
+                        android:padding="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginBottom="10dp"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/textView13"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Name task"
+                                    android:textSize="20dp"
+                                    tools:ignore="DuplicateIds" />
+
+                                <androidx.cardview.widget.CardView
+                                    android:layout_width="15dp"
+                                    android:layout_height="15dp"
+                                    android:layout_gravity="center|right"
+                                    app:cardBackgroundColor="#FFF000"
+                                    app:cardCornerRadius="15dp" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/textView14"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Short description"
+                                tools:ignore="DuplicateIds" />
+
+                            <View
+                                android:id="@+id/view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="1dp"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginBottom="2dp"
+                                android:background="#838383"
+                                tools:ignore="DuplicateIds" />
+
+                            <TextView
+                                android:id="@+id/textView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Deadline: 16 декбря 2025"
+                                tools:ignore="DuplicateIds" />
+
+                            <TextView
+                                android:id="@+id/textView2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Tags:"
+                                tools:ignore="DuplicateIds" />
+
+                        </LinearLayout>
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:background="#E0E0E0"
+                        android:padding="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginBottom="10dp"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/textView13"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Name task"
+                                    android:textSize="20dp" />
+
+                                <androidx.cardview.widget.CardView
+                                    android:layout_width="15dp"
+                                    android:layout_height="15dp"
+                                    android:layout_gravity="center|right"
+                                    app:cardBackgroundColor="#4CAF50"
+                                    app:cardCornerRadius="15dp" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/textView14"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Short description" />
+
+                            <View
+                                android:id="@+id/view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="1dp"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginBottom="2dp"
+                                android:background="#838383" />
+
+                            <TextView
+                                android:id="@+id/textView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Deadline: 16 декбря 2025" />
+
+                            <TextView
+                                android:id="@+id/textView2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Tags:" />
+
+                        </LinearLayout>
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:background="#E0E0E0"
+                        android:padding="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginBottom="10dp"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/textView13"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Name task"
+                                    android:textSize="20dp" />
+
+                                <androidx.cardview.widget.CardView
+                                    android:layout_width="15dp"
+                                    android:layout_height="15dp"
+                                    android:layout_gravity="center|right"
+                                    app:cardBackgroundColor="#FF0000"
+                                    app:cardCornerRadius="15dp" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/textView14"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Short description" />
+
+                            <View
+                                android:id="@+id/view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="1dp"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginBottom="2dp"
+                                android:background="#838383" />
+
+                            <TextView
+                                android:id="@+id/textView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Deadline: 16 декбря 2025" />
+
+                            <TextView
+                                android:id="@+id/textView2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Tags:" />
+
+                        </LinearLayout>
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:background="#E0E0E0"
+                        android:padding="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginBottom="10dp"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/textView13"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Name task"
+                                    android:textSize="20dp" />
+
+                                <androidx.cardview.widget.CardView
+                                    android:layout_width="15dp"
+                                    android:layout_height="15dp"
+                                    android:layout_gravity="center|right"
+                                    app:cardBackgroundColor="#FF0000"
+                                    app:cardCornerRadius="15dp" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/textView14"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Short description" />
+
+                            <View
+                                android:id="@+id/view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="1dp"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginBottom="2dp"
+                                android:background="#838383" />
+
+                            <TextView
+                                android:id="@+id/textView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Deadline: 16 декбря 2025" />
+
+                            <TextView
+                                android:id="@+id/textView2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Tags:" />
+
+                        </LinearLayout>
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:background="#E0E0E0"
+                        android:padding="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginBottom="10dp"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/textView13"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Project name"
+                                    android:textSize="20dp" />
+
+                                <androidx.cardview.widget.CardView
+                                    android:layout_width="15dp"
+                                    android:layout_height="15dp"
+                                    android:layout_gravity="center|right"
+                                    app:cardBackgroundColor="#FF0000"
+                                    app:cardCornerRadius="15dp" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/textView14"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Short description" />
+
+                            <View
+                                android:id="@+id/view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="1dp"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginBottom="2dp"
+                                android:background="#838383" />
+
+                            <TextView
+                                android:id="@+id/textView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Deadline: 16 декбря 2025"
+                                tools:ignore="DuplicateIds" />
+
+                            <TextView
+                                android:id="@+id/textView2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Tags:"
+                                tools:ignore="DuplicateIds" />
+
+                        </LinearLayout>
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:background="#E0E0E0"
+                        android:padding="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginBottom="10dp"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/textView13"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Project name"
+                                    android:textSize="20dp"
+                                    tools:ignore="DuplicateIds" />
+
+                                <androidx.cardview.widget.CardView
+                                    android:layout_width="15dp"
+                                    android:layout_height="15dp"
+                                    android:layout_gravity="center|right"
+                                    app:cardBackgroundColor="#FF0000"
+                                    app:cardCornerRadius="15dp" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/textView14"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Short description"
+                                tools:ignore="DuplicateIds" />
+
+                            <View
+                                android:id="@+id/view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="1dp"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginBottom="2dp"
+                                android:background="#838383"
+                                tools:ignore="DuplicateIds" />
+
+                            <TextView
+                                android:id="@+id/textView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Deadline: 16 декбря 2025"
+                                tools:ignore="DuplicateIds" />
+
+                            <TextView
+                                android:id="@+id/textView2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Tags:"
+                                tools:ignore="DuplicateIds" />
+
+                        </LinearLayout>
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:background="#E0E0E0"
+                        android:padding="10dp"/>
+                </LinearLayout>
+            </ScrollView>
+        </LinearLayout>
+    </LinearLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        tools:ignore="MissingConstraints" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

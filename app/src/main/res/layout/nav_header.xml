@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="160dp"
+    android:background="?attr/colorPrimary"
+    android:gravity="bottom"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+    <ImageView
+        android:id="@+id/profileImage"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:src="@drawable/ic_profile"
+        android:contentDescription="Профиль"
+        android:layout_gravity="center_horizontal"
+        android:padding="4dp" />
+
+    <TextView
+        android:id="@+id/profileName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Иван Иванов"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:layout_marginTop="8dp"
+        android:layout_gravity="center_horizontal" />
+
+    <TextView
+        android:id="@+id/profileEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ivan@example.com"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        android:layout_gravity="center_horizontal" />
+
+</LinearLayout>
