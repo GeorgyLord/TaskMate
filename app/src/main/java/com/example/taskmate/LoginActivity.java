@@ -91,8 +91,8 @@ public class LoginActivity extends AppCompatActivity {
 
         // Если пользователь уже вошел, переходим на главный экран
         if (mAuth.getCurrentUser() != null) {
-            //startActivity(new Intent(LoginActivity.this, Test4.class));
-            //finish();
+            startActivity(new Intent(LoginActivity.this, MainMenu2.class));
+            finish();
         }
 
     }

@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        Intent intent = new Intent(MainActivity.this, Test5.class);
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         //intent.putExtra("key", "value");
         startActivity(intent);
     }
