@@ -74,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
                         // Вход успешен
                         Toast.makeText(LoginActivity.this, "Вход выполнен", Toast.LENGTH_SHORT).show();
                         //startActivity(new Intent(LoginActivity.this, Test4.class)); // Переход на главный экран
-                        startActivity(new Intent(LoginActivity.this, Test5.class));
+                        startActivity(new Intent(LoginActivity.this, MainMenu2.class));
                         //finish(); // Закрыть текущую активность
                     } else {
                         // Вход не удался

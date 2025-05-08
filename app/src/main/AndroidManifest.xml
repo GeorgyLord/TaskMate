@@ -15,6 +15,9 @@
         android:theme="@style/Theme.TaskMate"
         tools:targetApi="31">
         <activity
+            android:name=".MainMenu2"
+            android:exported="false" />
+        <activity
             android:name=".Test5"
             android:exported="false" />
         <activity
