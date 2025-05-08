@@ -33,6 +33,7 @@ public class MainMenu2 extends AppCompatActivity {
     public Button buttonOpenMain;
     public Button buttonOpenCalendar;
     public Button buttonOpenMy;
+    public ImageView imageViewSearch;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -50,7 +51,7 @@ public class MainMenu2 extends AppCompatActivity {
         int screenWidth = displayMetrics.widthPixels; // Ширина экрана в пикселях
         int screenHeight = displayMetrics.heightPixels; // Высота экрана
 
-        ImageView imageView = findViewById(R.id.imageViewSearch);
+        imageViewSearch = findViewById(R.id.imageViewSearch);
         EditText lineSearch = findViewById(R.id.lineSearch);
         title = findViewById(R.id.screenName);
         //Button buttonApplySearch = findViewById(R.id.applySearch);
@@ -65,9 +66,9 @@ public class MainMenu2 extends AppCompatActivity {
         buttonOpenCalendar = findViewById(R.id.buttonOpenCalendar);
         buttonOpenMy = findViewById(R.id.buttonOpenMy);
 
-        imageView.setOnClickListener(v -> {
+        imageViewSearch.setOnClickListener(v -> {
             title.setVisibility(View.GONE);
-            imageView.setVisibility(View.GONE);
+            imageViewSearch.setVisibility(View.GONE);
             lineSearch.setVisibility(View.VISIBLE);
             //buttonApplySearch.setVisibility(View.VISIBLE);
             lineSearch.requestFocus();
@@ -84,7 +85,7 @@ public class MainMenu2 extends AppCompatActivity {
 
                     // Вызываем функцию (например, скрываем EditText и клавиатуру)
                     title.setVisibility(View.VISIBLE);
-                    imageView.setVisibility(View.VISIBLE);
+                    imageViewSearch.setVisibility(View.VISIBLE);
                     lineSearch.setVisibility(View.GONE);
                     //buttonApplySearch.setVisibility(View.GONE);
                     lineSearch.clearFocus();
@@ -138,6 +139,8 @@ public class MainMenu2 extends AppCompatActivity {
         buttonOpenMy.setTextColor(Color.parseColor("#5F5F5F"));
 
         title.setText("Главное меню");
+
+        imageViewSearch.setVisibility(View.VISIBLE);
     }
 
     public void openCalendar(View view) {
@@ -150,6 +153,8 @@ public class MainMenu2 extends AppCompatActivity {
         buttonOpenMy.setTextColor(Color.parseColor("#5F5F5F"));
 
         title.setText("Календарь");
+
+        imageViewSearch.setVisibility(View.GONE);
     }
 
     public void openMy(View view) {
@@ -162,6 +167,8 @@ public class MainMenu2 extends AppCompatActivity {
         buttonOpenMy.setTextColor(Color.parseColor("#2196F3"));
 
         title.setText("Мой аккаунт");
+
+        imageViewSearch.setVisibility(View.GONE);
     }
 
     public void openFormOfCreatingTask(View view) {

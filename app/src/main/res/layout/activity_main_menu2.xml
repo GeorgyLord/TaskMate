@@ -91,7 +91,8 @@
             <FrameLayout
                 android:id="@+id/main_content"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -140,8 +141,7 @@
             <FrameLayout
                 android:id="@+id/calendar_content"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone">
+                android:layout_height="match_parent">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -153,6 +153,12 @@
                         android:id="@+id/calendar"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
+
+                    <View
+                        android:id="@+id/view9"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#A2A2A2" />
 
                     <ImageView
                         android:id="@+id/image2"
@@ -274,6 +280,78 @@
                             android:layout_height="wrap_content"
                             android:text="Обзор задач"
                             android:textSize="20dp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="7dp"
+                            android:orientation="horizontal">
+
+                            <FrameLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginRight="5dp"
+                                android:layout_weight="1"
+                                android:background="#E7E7E7">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:id="@+id/textView33"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center"
+                                        android:padding="15dp"
+                                        android:text="0"
+                                        android:textSize="20dp" />
+
+                                    <TextView
+                                        android:id="@+id/textView38"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="center"
+                                        android:padding="8dp"
+                                        android:text="Выполненые задачи"
+                                        android:textSize="16sp" />
+                                </LinearLayout>
+                            </FrameLayout>
+
+                            <FrameLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="5dp"
+                                android:layout_weight="1"
+                                android:background="#E7E7E7">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:id="@+id/textView39"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center"
+                                        android:padding="15dp"
+                                        android:text="0"
+                                        android:textSize="20dp" />
+
+                                    <TextView
+                                        android:id="@+id/textView40"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center"
+                                        android:padding="8dp"
+                                        android:text="Незавершенные задачи"
+                                        android:textSize="16sp" />
+                                </LinearLayout>
+                            </FrameLayout>
+                        </LinearLayout>
                     </LinearLayout>
 
                 </LinearLayout>
