@@ -1,0 +1,14 @@
+<resources>
+    <string-array name="categories_array">
+        <item>Личное</item>
+        <item>Работа</item>
+        <item>Дом</item>
+        <item>Учеба</item>
+    </string-array>
+    <string-array name="repetition_array">
+        <item>Единоразово</item>
+        <item>Ежедневно</item>
+        <item>Еженедельно</item>
+        <item>Месяц</item>
+    </string-array>
+</resources>
