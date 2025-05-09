@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class Test3 extends AppCompatActivity {
     private DrawerLayout drawerLayout;
@@ -144,7 +145,7 @@ public class Test3 extends AppCompatActivity {
         userRef.get().addOnSuccessListener(documentSnapshot -> {
             //if (documentSnapshot.exists()) {
                 // Получаем массив как List<String>
-                List<String> list = documentSnapshot.toObject(User.class).id_of_tasks;
+                List<String> list = Objects.requireNonNull(documentSnapshot.toObject(User.class)).id_of_tasks;
                 System.out.println("c1");
 
                 if (list_tasks.size() != list.size() || true) {

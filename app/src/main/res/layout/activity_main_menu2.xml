@@ -41,12 +41,23 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
+                android:layout_marginRight="10dp"
                 android:layout_weight="1"
                 android:ems="1"
                 android:hint="Введите название"
                 android:inputType="text"
                 android:visibility="gone" />
+
+            <ImageButton
+                android:id="@+id/buttonClearSearchLine"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:layout_marginRight="15dp"
+                android:background="#00FFFFFF"
+                android:onClick="clearInputLine"
+                android:visibility="gone"
+                app:srcCompat="@drawable/baseline_close_24" />
 
             <Button
                 android:id="@+id/applySearch"
@@ -91,19 +102,21 @@
             <FrameLayout
                 android:id="@+id/main_content"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone">
+                android:layout_height="match_parent">
 
                 <LinearLayout
+                    android:id="@+id/renderingContainer"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical" />
 
                 <LinearLayout
+                    android:id="@+id/emptyRenderingContainer"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <ImageView
                         android:id="@+id/image1"
@@ -141,7 +154,8 @@
             <FrameLayout
                 android:id="@+id/calendar_content"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -352,6 +366,23 @@
                                 </LinearLayout>
                             </FrameLayout>
                         </LinearLayout>
+
+                        <Button
+                            android:id="@+id/button3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:onClick="logOutOfYourAccount"
+                            android:text="Выйти из аккаунта"
+                            tools:ignore="OnClick" />
+
+                        <Button
+                            android:id="@+id/button4"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:onClick="deleteAccount"
+                            android:text="Удилить аккаунт" />
                     </LinearLayout>
 
                 </LinearLayout>

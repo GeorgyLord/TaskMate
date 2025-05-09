@@ -112,7 +112,8 @@ public class RegisterActivity extends AppCompatActivity {
                         // Сохраняем строку
                         SharedPreferences sharedPref = getSharedPreferences("data", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPref.edit();
-                        editor.putString("id", String.valueOf(newDocRef.getId()));
+                        editor.putString("email", email);
+                        //editor.putString("id", String.valueOf(newDocRef.getId()));
                         editor.apply(); // или editor.commit();
 
                         Toast.makeText(RegisterActivity.this, "Регистрация выполнена", Toast.LENGTH_SHORT).show();

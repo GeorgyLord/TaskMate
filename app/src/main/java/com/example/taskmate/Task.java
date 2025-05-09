@@ -1,5 +1,6 @@
 package com.example.taskmate;
 
+
 public class Task {
     /*
     private String name; // 0
@@ -36,7 +37,8 @@ public class Task {
         this.name = name;
     }
     */
-    private String name; // 0
+    private String nameTask; // 0
+    private String description;
     private String owner; // 1
     private String tags; // 2
     private String time; // 3
@@ -50,8 +52,9 @@ public class Task {
 
     }
 
-    public Task(String name, String owner, String tags, String time, String date, String deadline, String priotity, String date_and_time_of_creation) {
-        this.name = name;
+    public Task(String name, String description, String owner, String tags, String time, String date, String deadline, String priotity, String date_and_time_of_creation) {
+        this.nameTask = name;
+        this.description = description;
         this.owner = owner;
         this.tags = tags;
         this.time = time;
@@ -62,10 +65,10 @@ public class Task {
     }
 
     public String getName() {
-        return name;
+        return nameTask;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.nameTask = name;
     }
 }

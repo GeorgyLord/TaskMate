@@ -80,7 +80,7 @@
                         android:textSize="20dp" />
 
                     <EditText
-                        android:id="@+id/editTextText3"
+                        android:id="@+id/editTextNameTask"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:ems="10"
@@ -112,7 +112,7 @@
                         android:textSize="20dp" />
 
                     <EditText
-                        android:id="@+id/editTextTextMultiLine2"
+                        android:id="@+id/editTextMultiLineDescription"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:ems="10"
@@ -183,7 +183,7 @@
                         android:layout_marginTop="5dp">
 
                         <RadioButton
-                            android:id="@+id/radioButton4"
+                            android:id="@+id/radioButtonLow"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:checked="true"
@@ -199,7 +199,7 @@
                             android:background="#D1D1D1" />
 
                         <RadioButton
-                            android:id="@+id/radioButton5"
+                            android:id="@+id/radioButtonMedium"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:elevation="10dp"
@@ -214,7 +214,7 @@
                             android:background="#D1D1D1" />
 
                         <RadioButton
-                            android:id="@+id/radioButton6"
+                            android:id="@+id/radioButtonHigh"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:elevation="10dp"
@@ -281,7 +281,7 @@
                                     app:srcCompat="@drawable/baseline_calendar_month_24" />
 
                                 <TextView
-                                    android:id="@+id/textView34"
+                                    android:id="@+id/textViewDate"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginLeft="5dp"
@@ -314,7 +314,7 @@
                                     app:srcCompat="@drawable/baseline_access_time_24" />
 
                                 <TextView
-                                    android:id="@+id/textView36"
+                                    android:id="@+id/textViewTime"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginLeft="5dp"
@@ -365,6 +365,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
+                    android:onClick="createTask"
                     android:text="Добавить" />
             </LinearLayout>
         </ScrollView>
