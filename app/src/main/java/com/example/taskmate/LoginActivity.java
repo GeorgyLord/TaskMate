@@ -1,6 +1,8 @@
 package com.example.taskmate;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -72,6 +74,12 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         // Вход успешен
+
+                        SharedPreferences sharedPref = getSharedPreferences("data", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPref.edit();
+                        editor.putString("email", email);
+                        editor.apply();
+
                         Toast.makeText(LoginActivity.this, "Вход выполнен", Toast.LENGTH_SHORT).show();
                         //startActivity(new Intent(LoginActivity.this, Test4.class)); // Переход на главный экран
                         startActivity(new Intent(LoginActivity.this, MainMenu2.class));
@@ -91,8 +99,8 @@ public class LoginActivity extends AppCompatActivity {
 
         // Если пользователь уже вошел, переходим на главный экран
         if (mAuth.getCurrentUser() != null) {
-            startActivity(new Intent(LoginActivity.this, MainMenu2.class));
-            finish();
+            //startActivity(new Intent(LoginActivity.this, MainMenu2.class));
+            //finish();
         }
 
     }

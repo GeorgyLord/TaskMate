@@ -147,7 +147,8 @@
                         android:layout_marginBottom="26dp"
                         android:clickable="true"
                         android:onClick="openFormOfCreatingTask"
-                        app:srcCompat="@drawable/add" />
+                        app:srcCompat="@drawable/add"
+                        style="@style/buttonOpeningFormCreatingTask"/>
                 </LinearLayout>
             </FrameLayout>
 
@@ -372,8 +373,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_margin="15dp"
+                            android:backgroundTint="@color/pale_red"
                             android:onClick="logOutOfYourAccount"
                             android:text="Выйти из аккаунта"
+                            android:textColor="@color/dark_red"
                             tools:ignore="OnClick" />
 
                         <Button

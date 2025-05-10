@@ -5,6 +5,11 @@
         <item>Дом</item>
         <item>Учеба</item>
     </string-array>
+    <string-array name="priority_array">
+        <item>Низкий</item>
+        <item>Средний</item>
+        <item>Высокий</item>
+    </string-array>
     <string-array name="repetition_array">
         <item>Единоразово</item>
         <item>Ежедневно</item>

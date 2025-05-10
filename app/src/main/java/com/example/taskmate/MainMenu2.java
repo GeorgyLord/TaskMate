@@ -69,6 +69,7 @@ public class MainMenu2 extends AppCompatActivity {
     public ImageView buttonClearSearchLine;
     private RecyclerView recyclerView;
     private List<Task> tasks = new ArrayList<>();
+    private long numberSelectedMenu = 1;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -82,11 +83,12 @@ public class MainMenu2 extends AppCompatActivity {
             return insets;
         });
         countTasksRendered = 0;
-        currentCountTasksRendered = 0;
+//        currentCountTasksRendered = 0;
         SharedPreferences sharedPref1 = getSharedPreferences("data", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref1.edit();
-        editor.putLong("currentCountTasksRendered", currentCountTasksRendered);
-        editor.apply();
+        currentCountTasksRendered = sharedPref1.getLong("count_tasks", 0);
+//        SharedPreferences.Editor editor = sharedPref1.edit();
+//        editor.putLong("currentCountTasksRendered", currentCountTasksRendered);
+//        editor.apply();
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -132,7 +134,9 @@ public class MainMenu2 extends AppCompatActivity {
 
                     // Вызываем функцию (например, скрываем EditText и клавиатуру)
                     title.setVisibility(View.VISIBLE);
-                    imageViewSearch.setVisibility(View.VISIBLE);
+                    if (numberSelectedMenu==1) {
+                        imageViewSearch.setVisibility(View.VISIBLE);
+                    }
                     lineSearch.setVisibility(View.GONE);
                     buttonClearSearchLine.setVisibility(View.GONE);
                     //buttonApplySearch.setVisibility(View.GONE);
@@ -167,7 +171,56 @@ public class MainMenu2 extends AppCompatActivity {
         // Запускаем задачу
         handler.post(runnable);
 
+        boolean value = getIntent().getBooleanExtra("must_draw", false);
+        if (value){
+            for (int i = 0; i < currentCountTasksRendered; i++) {
+                CardView newCard = (CardView) LayoutInflater.from(this).inflate(R.layout.task_card, renderingContainer, false);
 
+                // Устанавливаем ID
+                newCard.setId(View.generateViewId());
+
+
+                TextView titleText = newCard.findViewById(R.id.taskTitle);
+                TextView descriptionText = newCard.findViewById(R.id.taskDescription);
+                TextView taskDueDateText = newCard.findViewById(R.id.taskDueDate);
+                View priorityIndicator = newCard.findViewById(R.id.priorityIndicator);
+
+                titleText.setText(sharedPref1.getString("title_task"+String.valueOf(i), "None"));
+                descriptionText.setText(sharedPref1.getString("description"+String.valueOf(i), "None"));
+                String id_task = sharedPref1.getString("id_task"+String.valueOf(i), "None");
+
+                String temp_string = sharedPref1.getString("deadlineDate"+String.valueOf(i), "None");
+                if (!temp_string.equals("Указать дату")) {
+                    taskDueDateText.setText(temp_string);
+                }
+                else{
+                    taskDueDateText.setText("");
+                }
+
+                String temp_priority = sharedPref1.getString("priority"+String.valueOf(i), "None");
+                if (temp_priority.equals("0")){
+                    priorityIndicator.setBackgroundColor(0xFF82FF22);
+                } else if (temp_priority.equals("1")) {
+                    priorityIndicator.setBackgroundColor(0xFFB922FF);
+                }else{
+                    priorityIndicator.setBackgroundColor(0xFFFF5722);
+                }
+
+                // Обрабатываем клик
+                newCard.setOnClickListener(v -> {
+                    Intent intent = new Intent(MainMenu2.this, DataTask.class);
+                    // Передаем данные
+                    intent.putExtra("id_task", id_task);
+                    intent.putExtra("task_title", titleText.getText().toString());
+                    intent.putExtra("task_description", descriptionText.getText().toString());
+                    intent.putExtra("task_date", taskDueDateText.getText().toString());
+
+                    startActivity(intent);
+                });
+
+                renderingContainer.addView(newCard);
+            }
+        }
     }
 
     @Override
@@ -205,6 +258,8 @@ public class MainMenu2 extends AppCompatActivity {
         title.setText("Главное меню");
 
         imageViewSearch.setVisibility(View.VISIBLE);
+
+        numberSelectedMenu = 1;
     }
 
     public void openCalendar(View view) {
@@ -219,6 +274,8 @@ public class MainMenu2 extends AppCompatActivity {
         title.setText("Календарь");
 
         imageViewSearch.setVisibility(View.GONE);
+
+        numberSelectedMenu = 2;
     }
 
     public void openMy(View view) {
@@ -233,6 +290,8 @@ public class MainMenu2 extends AppCompatActivity {
         title.setText("Мой аккаунт");
 
         imageViewSearch.setVisibility(View.GONE);
+
+        numberSelectedMenu = 3;
     }
 
     public void openFormOfCreatingTask(View view) {
@@ -334,7 +393,9 @@ public class MainMenu2 extends AppCompatActivity {
                 // Сохраняем строку
                 SharedPreferences sharedPref = getSharedPreferences("data", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putLong("count_tasks", list.size());
                 editor.putLong("currentCountTasksRendered", list.size());
+                editor.apply();
 
                 for (int i = 0; i < list.size(); i++) {
 
@@ -348,20 +409,24 @@ public class MainMenu2 extends AppCompatActivity {
                             String temp_nameTask = documentSnapshot2.getString("nameTask");
                             String temp_description = documentSnapshot2.getString("description");
                             String temp_deadlineDate = documentSnapshot2.getString("deadlineDate");
-                            String temp_boolRadioButtonHigh = documentSnapshot2.getString("boolRadioButtonHigh");
-                            String temp_boolRadioButtonLow = documentSnapshot2.getString("boolRadioButtonLow");
-                            String temp_boolRadioButtonMedium = documentSnapshot2.getString("boolRadioButtonMedium");
+                            String temp_priority = documentSnapshot2.getString("priority");
+//                            String temp_boolRadioButtonHigh = documentSnapshot2.getString("boolRadioButtonHigh");
+//                            String temp_boolRadioButtonLow = documentSnapshot2.getString("boolRadioButtonLow");
+//                            String temp_boolRadioButtonMedium = documentSnapshot2.getString("boolRadioButtonMedium");
 
+                            editor2.putString("id_task"+finalI, list.get(finalI));
                             editor2.putString("title_task"+finalI, temp_nameTask);
                             editor2.putString("description"+finalI, temp_description);
                             editor2.putString("deadlineDate"+finalI, temp_deadlineDate);
-                            if (Objects.equals(temp_boolRadioButtonHigh, "true")){
-                                editor2.putString("priority"+finalI, "0");
-                            } else if (Objects.equals(temp_boolRadioButtonMedium, "true")) {
-                                editor2.putString("priority"+finalI, "1");
-                            }else {
-                                editor2.putString("priority"+finalI, "2");
-                            }
+                            editor2.putString("priority"+finalI, temp_priority);
+
+//                            if (Objects.equals(temp_boolRadioButtonHigh, "true")){
+//                                editor2.putString("priority"+finalI, "0");
+//                            } else if (Objects.equals(temp_boolRadioButtonMedium, "true")) {
+//                                editor2.putString("priority"+finalI, "1");
+//                            }else {
+//                                editor2.putString("priority"+finalI, "2");
+//                            }
 
                             editor2.apply();
                         }
@@ -380,7 +445,7 @@ public class MainMenu2 extends AppCompatActivity {
 
         if (currentCountTasksRendered > 0) {
             if (countTasksRendered != currentCountTasksRendered) {
-                System.out.println("Есть новые задачи!!!");
+                //System.out.println("Есть новые задачи!!!");
                 renderingContainer.removeAllViews();
                 for (int i = 0; i < currentCountTasksRendered; i++) {
                     CardView newCard = (CardView) LayoutInflater.from(this).inflate(R.layout.task_card, renderingContainer, false);
@@ -396,6 +461,7 @@ public class MainMenu2 extends AppCompatActivity {
 
                     titleText.setText(sharedPref2.getString("title_task"+String.valueOf(i), "None"));
                     descriptionText.setText(sharedPref2.getString("description"+String.valueOf(i), "None"));
+                    String id_task = sharedPref2.getString("id_task"+String.valueOf(i), "None");
 
                     String temp_string = sharedPref2.getString("deadlineDate"+String.valueOf(i), "None");
                     if (!temp_string.equals("Указать дату")) {
@@ -406,10 +472,10 @@ public class MainMenu2 extends AppCompatActivity {
                     }
 
                     String temp_priority = sharedPref2.getString("priority"+String.valueOf(i), "None");
-                    if (temp_priority.equals("0")){
+                    if (temp_priority.equals("Низкий")){
                         priorityIndicator.setBackgroundColor(0xFF82FF22);
                         //priorityIndicator.setBackground(Drawable.createFromPath("#82FF22FF"));
-                    } else if (temp_priority.equals("1")) {
+                    } else if (temp_priority.equals("Средний")) {
                         priorityIndicator.setBackgroundColor(0xFFB922FF);
                         //priorityIndicator.setBackground(Drawable.createFromPath("#FFB922FF"));
                     }else{
@@ -431,9 +497,11 @@ public class MainMenu2 extends AppCompatActivity {
 //                        title.setText("Нажато!");
                         Intent intent = new Intent(MainMenu2.this, DataTask.class);
                         // Передаем данные
-                        intent.putExtra("task_title", titleText.toString());
-                        intent.putExtra("task_description", descriptionText.toString());
-                        intent.putExtra("task_date", taskDueDateText.toString());
+                        intent.putExtra("id_task", id_task);
+                        intent.putExtra("task_title", titleText.getText().toString());
+                        intent.putExtra("task_description", descriptionText.getText().toString());
+                        intent.putExtra("task_date", taskDueDateText.getText().toString());
+                        intent.putExtra("priority", temp_priority);
 
                         startActivity(intent);
                     });
@@ -443,7 +511,7 @@ public class MainMenu2 extends AppCompatActivity {
 
                 countTasksRendered = currentCountTasksRendered;
             } else {
-                System.out.println("Нет новых задач");
+                //System.out.println("Нет новых задач");
             }
             emptyRenderingContainer.setVisibility(View.GONE);
             renderingContainer.setVisibility(View.VISIBLE);
@@ -462,3 +530,5 @@ public class MainMenu2 extends AppCompatActivity {
         buttonClearSearchLine.setVisibility(View.GONE);
     }
 }
+
+// E8DBFDFF - бледно фиолетовый
