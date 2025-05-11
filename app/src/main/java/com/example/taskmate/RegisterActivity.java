@@ -102,6 +102,7 @@ public class RegisterActivity extends AppCompatActivity {
                         data.put("password", password);
                         data.put("date_of_registration", currentDate);
                         data.put("id_of_tasks", id_of_tasks);
+                        data.put("name", "");
 
                         newDocRef = db.collection(Path).document(email);
                         //data.put("id_user", newDocRef.getId());

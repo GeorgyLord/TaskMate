@@ -1,5 +1,7 @@
 package com.example.taskmate;
 
+import static android.graphics.Color.parseColor;
+
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -8,10 +10,12 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -34,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 
 public class CreatingTask extends AppCompatActivity {
 
@@ -57,6 +62,13 @@ public class CreatingTask extends AppCompatActivity {
     private ImageView buttonClearTime;
     private LinearLayout containerDeadline;
     private Spinner spinnerPriority;
+    private LinearLayout formExisting;
+    private LinearLayout block2;
+    private TextView title_content;
+    private Button buttonOpenNewTask;
+    private Button buttonOpenExistingTask;
+    private EditText inviteCodeInput;
+    private ScrollView formNew;
 
 
 
@@ -89,6 +101,17 @@ public class CreatingTask extends AppCompatActivity {
 
         buttonClearTime = findViewById(R.id.buttonClearTime);
         buttonClearDate = findViewById(R.id.buttonClearDate);
+
+        block2 = findViewById(R.id.block2);
+        formExisting = findViewById(R.id.formExisting);
+
+        title_content = findViewById(R.id.title_content);
+
+        buttonOpenExistingTask = findViewById(R.id.buttonOpenExistingTask);
+        buttonOpenNewTask = findViewById(R.id.buttonOpenNewTask);
+        inviteCodeInput = findViewById(R.id.inviteCodeInput);
+
+        formNew = findViewById(R.id.formNew);
 
 
 
@@ -174,6 +197,12 @@ public class CreatingTask extends AppCompatActivity {
 //        data_task.put("boolSwitchDeadline", boolSwitchDeadline);
         data_task.put("deadlineDate", deadlineDate);
         data_task.put("deadlineTime",deadlineTime );
+        data_task.put("done", "false");
+        Random random = new Random();
+        data_task.put("invitationCode", random.nextInt(9999999));
+
+        ArrayList<String> participantsList = new ArrayList<>();
+        data_task.put("participants", participantsList);
 
         // Создаем ArrayList (динамический массив)
         ArrayList<String> stringList = new ArrayList<>();
@@ -280,5 +309,29 @@ public class CreatingTask extends AppCompatActivity {
         else{
             containerDeadline.setVisibility(View.GONE);
         }
+    }
+
+    public void OpenNewTask(View view) {
+        formNew.setVisibility(View.VISIBLE);
+        formExisting.setVisibility(View.GONE);
+
+        title_content.setText("Создание задачи");
+
+        buttonOpenNewTask.setTextColor(parseColor("#2196F3"));
+        buttonOpenExistingTask.setTextColor(parseColor("#5F5F5F"));
+    }
+
+    public void OpenExistingTask(View view) {
+        formNew.setVisibility(View.GONE);
+        formExisting.setVisibility(View.VISIBLE);
+
+        title_content.setText("Добавление задачи");
+
+        buttonOpenNewTask.setTextColor(parseColor("#5F5F5F"));
+        buttonOpenExistingTask.setTextColor(parseColor("#2196F3"));
+    }
+
+    public void addExistingTask(View view) {
+        //inviteCodeInput
     }
 }

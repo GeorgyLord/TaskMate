@@ -1,9 +1,15 @@
 package com.example.taskmate;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextWatcher;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StrikethroughSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +24,7 @@ import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -105,6 +112,40 @@ public class DataTask extends AppCompatActivity {
 
                     containerSubtasks.addView(newCard2);
 
+                    if (checkBoxSubtask2.isChecked()) {
+                        // Зачеркиваем и делаем светлее
+                        title_subtask2.setPaintFlags(title_subtask2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                        title_subtask2.setTextColor(ContextCompat.getColor(DataTask.this, R.color.light_gray));
+                    } else {
+                        // Возвращаем обычный текст
+                        title_subtask2.setPaintFlags(title_subtask2.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                        title_subtask2.setTextColor(ContextCompat.getColor(DataTask.this, android.R.color.primary_text_light));
+                    }
+
+                    /*
+                    String text = title_subtask2.getText().toString();
+                    SpannableString spannableString = new SpannableString(text);
+                    if (checkBoxSubtask2.isChecked()){
+                        // Зачеркивание
+                        spannableString.setSpan(new StrikethroughSpan(), 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        // Изменение цвета
+                        spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#BDBDBD")),
+                                0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    }else{
+                        // Удаление всех стилей
+                        StrikethroughSpan[] strikeSpans = spannableString.getSpans(0, text.length(), StrikethroughSpan.class);
+                        ForegroundColorSpan[] colorSpans = spannableString.getSpans(0, text.length(), ForegroundColorSpan.class);
+
+                        for (StrikethroughSpan span : strikeSpans) {
+                            spannableString.removeSpan(span);
+                        }
+                        for (ForegroundColorSpan span : colorSpans) {
+                            spannableString.removeSpan(span);
+                        }
+                    }
+                    title_subtask2.setText(spannableString);
+                    */
+
 
                     // Обработчик нажатия на кнопку удаления
                     btnDelete.setOnClickListener(v -> {
@@ -190,6 +231,42 @@ public class DataTask extends AppCompatActivity {
                     checkBoxSubtask2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                            if (isChecked) {
+                                // Зачеркиваем и делаем светлее
+                                title_subtask2.setPaintFlags(title_subtask2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                                title_subtask2.setTextColor(ContextCompat.getColor(DataTask.this, R.color.light_gray));
+                            } else {
+                                // Возвращаем обычный текст
+                                title_subtask2.setPaintFlags(title_subtask2.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                                title_subtask2.setTextColor(ContextCompat.getColor(DataTask.this, android.R.color.primary_text_light));
+                            }
+
+                            /*
+                            String text = title_subtask2.getText().toString();
+                            SpannableString spannableString = new SpannableString(text);
+                            if (isChecked){
+                                // Зачеркивание
+                                spannableString.setSpan(new StrikethroughSpan(), 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                // Изменение цвета
+                                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#BDBDBD")),
+                                        0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            }else{
+                                // Удаление всех стилей
+                                StrikethroughSpan[] strikeSpans = spannableString.getSpans(0, text.length(), StrikethroughSpan.class);
+                                ForegroundColorSpan[] colorSpans = spannableString.getSpans(0, text.length(), ForegroundColorSpan.class);
+
+                                for (StrikethroughSpan span : strikeSpans) {
+                                    spannableString.removeSpan(span);
+                                }
+                                for (ForegroundColorSpan span : colorSpans) {
+                                    spannableString.removeSpan(span);
+                                }
+                            }
+                            title_subtask2.setText(spannableString);
+
+                             */
+
                             newDocRef.get().addOnSuccessListener(documentSnapshot -> {
                                 if (documentSnapshot.exists()) {
                                     List<Map<String, Object>> subtasks = new ArrayList<>();
@@ -218,6 +295,7 @@ public class DataTask extends AppCompatActivity {
                         }
                     });
                 }
+
                 // 5. Обновляем документ с новым массивом
                 newDocRef.update("subtasks", subtasks)
                         .addOnSuccessListener(aVoid -> Log.d("Firestore", "Массив обновлен!"))
@@ -408,6 +486,17 @@ public class DataTask extends AppCompatActivity {
         checkBoxSubtask1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if (isChecked) {
+                    // Зачеркиваем и делаем светлее
+                    title_subtask.setPaintFlags(title_subtask.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                    title_subtask.setTextColor(ContextCompat.getColor(DataTask.this, R.color.light_gray));
+                } else {
+                    // Возвращаем обычный текст
+                    title_subtask.setPaintFlags(title_subtask.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                    title_subtask.setTextColor(ContextCompat.getColor(DataTask.this, android.R.color.primary_text_light));
+                }
+
                 newDocRef.get().addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         List<Map<String, Object>> subtasks = new ArrayList<>();

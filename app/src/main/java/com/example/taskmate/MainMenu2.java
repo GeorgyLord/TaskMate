@@ -6,11 +6,11 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +19,8 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CalendarView;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -29,21 +31,20 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -70,6 +71,8 @@ public class MainMenu2 extends AppCompatActivity {
     private RecyclerView recyclerView;
     private List<Task> tasks = new ArrayList<>();
     private long numberSelectedMenu = 1;
+    private TextView emailTitle;
+    private EditText nameTitle;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -113,6 +116,58 @@ public class MainMenu2 extends AppCompatActivity {
 
         renderingContainer = findViewById(R.id.renderingContainer);
         emptyRenderingContainer = findViewById(R.id.emptyRenderingContainer);
+
+        emailTitle = findViewById(R.id.emailTitle);
+        SharedPreferences sharedPref_email = getSharedPreferences("data", Context.MODE_PRIVATE);
+        String tempEmail = sharedPref_email.getString("email", "example@email.ru"); // второй параметр — значение по умолчанию
+        emailTitle.setText(tempEmail);
+
+        nameTitle = findViewById(R.id.nameTitle);
+
+        DocumentReference taskRef3 = db.collection("users").document(tempEmail);
+
+        db.collection("users")
+                .document(tempEmail)
+                .get()
+                .addOnSuccessListener(documentSnapshot3 -> {
+                    if (documentSnapshot3.exists()) {
+                        // Получаем строковое значение по ключу "field_name"
+                        nameTitle.setText(documentSnapshot3.getString("name"));
+
+                    } else {
+                        Log.d("Firestore", "Документ не существует");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Ошибка чтения", e);
+                });
+
+        nameTitle.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Вызывается ДО изменения текста
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Вызывается ВО ВРЕМЯ изменения текста
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // Вызывается ПОСЛЕ изменения текста
+                String temp_string = s.toString(); // Обновляем переменную
+                DocumentReference taskRef3 = db.collection("users").document(tempEmail);
+                taskRef3.update("name", String.valueOf(temp_string))
+                        .addOnSuccessListener(aVoid -> {
+                            Log.d("Firestore", "Поле успешно обновлено");
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e("Firestore", "Ошибка обновления", e);
+                        });
+            }
+        });
 
         imageViewSearch.setOnClickListener(v -> {
             title.setVisibility(View.GONE);
@@ -184,6 +239,7 @@ public class MainMenu2 extends AppCompatActivity {
                 TextView descriptionText = newCard.findViewById(R.id.taskDescription);
                 TextView taskDueDateText = newCard.findViewById(R.id.taskDueDate);
                 View priorityIndicator = newCard.findViewById(R.id.priorityIndicator);
+                CheckBox checkBoxTask = newCard.findViewById(R.id.checkBoxTask);
 
                 titleText.setText(sharedPref1.getString("title_task"+String.valueOf(i), "None"));
                 descriptionText.setText(sharedPref1.getString("description"+String.valueOf(i), "None"));
@@ -219,6 +275,23 @@ public class MainMenu2 extends AppCompatActivity {
                 });
 
                 renderingContainer.addView(newCard);
+
+                checkBoxTask.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                        if (isChecked) {
+                            // Зачеркиваем и делаем светлее
+                            titleText.setPaintFlags(titleText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                            titleText.setTextColor(ContextCompat.getColor(MainMenu2.this, R.color.light_gray));
+                        } else {
+                            // Возвращаем обычный текст
+                            titleText.setPaintFlags(titleText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                            titleText.setTextColor(ContextCompat.getColor(MainMenu2.this, android.R.color.primary_text_light));
+                        }
+
+                    }
+                });
             }
         }
     }
@@ -338,9 +411,6 @@ public class MainMenu2 extends AppCompatActivity {
         }
     }
 
-    // moscowt3485@mail.ru
-    // 12345678
-
     private void deleteUserDataFromFirestore(String userId) {
         db.collection("users").document(userId)
                 .delete()
@@ -410,6 +480,7 @@ public class MainMenu2 extends AppCompatActivity {
                             String temp_description = documentSnapshot2.getString("description");
                             String temp_deadlineDate = documentSnapshot2.getString("deadlineDate");
                             String temp_priority = documentSnapshot2.getString("priority");
+                            String temp_done = documentSnapshot2.getString("done");
 //                            String temp_boolRadioButtonHigh = documentSnapshot2.getString("boolRadioButtonHigh");
 //                            String temp_boolRadioButtonLow = documentSnapshot2.getString("boolRadioButtonLow");
 //                            String temp_boolRadioButtonMedium = documentSnapshot2.getString("boolRadioButtonMedium");
@@ -419,6 +490,7 @@ public class MainMenu2 extends AppCompatActivity {
                             editor2.putString("description"+finalI, temp_description);
                             editor2.putString("deadlineDate"+finalI, temp_deadlineDate);
                             editor2.putString("priority"+finalI, temp_priority);
+                            editor2.putString("done"+finalI, temp_done);
 
 //                            if (Objects.equals(temp_boolRadioButtonHigh, "true")){
 //                                editor2.putString("priority"+finalI, "0");
@@ -458,10 +530,12 @@ public class MainMenu2 extends AppCompatActivity {
                     TextView descriptionText = newCard.findViewById(R.id.taskDescription);
                     TextView taskDueDateText = newCard.findViewById(R.id.taskDueDate);
                     View priorityIndicator = newCard.findViewById(R.id.priorityIndicator);
+                    CheckBox checkBox = newCard.findViewById(R.id.checkBoxTask);
 
                     titleText.setText(sharedPref2.getString("title_task"+String.valueOf(i), "None"));
                     descriptionText.setText(sharedPref2.getString("description"+String.valueOf(i), "None"));
                     String id_task = sharedPref2.getString("id_task"+String.valueOf(i), "None");
+                    String bool_done = sharedPref2.getString("done"+String.valueOf(i), "false");
 
                     String temp_string = sharedPref2.getString("deadlineDate"+String.valueOf(i), "None");
                     if (!temp_string.equals("Указать дату")) {
@@ -503,10 +577,49 @@ public class MainMenu2 extends AppCompatActivity {
                         intent.putExtra("task_date", taskDueDateText.getText().toString());
                         intent.putExtra("priority", temp_priority);
 
+
                         startActivity(intent);
                     });
 
                     renderingContainer.addView(newCard);
+
+                    checkBox.setChecked(Boolean.valueOf(bool_done));
+
+                    if (checkBox.isChecked()) {
+                        // Зачеркиваем и делаем светлее
+                        titleText.setPaintFlags(titleText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                        titleText.setTextColor(ContextCompat.getColor(MainMenu2.this, R.color.light_gray));
+                    } else {
+                        // Возвращаем обычный текст
+                        titleText.setPaintFlags(titleText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                        titleText.setTextColor(ContextCompat.getColor(MainMenu2.this, android.R.color.primary_text_light));
+                    }
+
+                    checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                            if (isChecked) {
+                                // Зачеркиваем и делаем светлее
+                                titleText.setPaintFlags(titleText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                                titleText.setTextColor(ContextCompat.getColor(MainMenu2.this, R.color.light_gray));
+                            } else {
+                                // Возвращаем обычный текст
+                                titleText.setPaintFlags(titleText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                                titleText.setTextColor(ContextCompat.getColor(MainMenu2.this, android.R.color.primary_text_light));
+                            }
+
+                            DocumentReference taskRef3 = db.collection("tasks").document(id_task);
+                            taskRef3.update("done", String.valueOf(isChecked))
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.d("Firestore", "Поле успешно обновлено");
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e("Firestore", "Ошибка обновления", e);
+                                    });
+
+                        }
+                    });
                 }
 
                 countTasksRendered = currentCountTasksRendered;
@@ -532,3 +645,9 @@ public class MainMenu2 extends AppCompatActivity {
 }
 
 // E8DBFDFF - бледно фиолетовый
+/*
+
+moscowt3485@mail.ru
+12345678
+
+ */
