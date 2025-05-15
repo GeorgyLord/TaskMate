@@ -1,5 +1,9 @@
 package com.example.taskmate;
 
+import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -17,9 +21,12 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,13 +44,23 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
+
+import com.example.taskmate.R;
 
 public class DataTask extends AppCompatActivity {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     DocumentReference newDocRef;
     public LinearLayout containerSubtasks;
     public String id_task;
+    private FrameLayout frameLayoutEnd;
+    private FrameLayout frameLayoutInvitation;
+    private String invitation_cod;
+    private TextView text_invitation_cod;
+    private EditText textDescription;
+    private ImageButton btnOverflow;
+    private PopupMenu popupMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,21 +75,74 @@ public class DataTask extends AppCompatActivity {
 
 
         containerSubtasks = findViewById(R.id.containerSubtasks);
+        frameLayoutEnd = findViewById(R.id.frameLayoutEnd);
+        frameLayoutInvitation = findViewById(R.id.frameLayoutInvitation);
+        text_invitation_cod = findViewById(R.id.text_invitation_cod);
+        textDescription = findViewById(R.id.textDescription);
+        btnOverflow = findViewById(R.id.btn_overflow);
+
+
+        // Создаем PopupMenu
+        btnOverflow.setOnClickListener(v -> {
+            PopupMenu popupMenu = new PopupMenu(DataTask.this, v);
+            popupMenu.getMenuInflater().inflate(R.menu.overflow_menu, popupMenu.getMenu());
+
+            popupMenu.setOnMenuItemClickListener(item -> {
+                int id = item.getItemId();
+
+                if (id == R.id.action_members) {
+                    showMembersDialog();
+                    return true;
+                } else if (id == R.id.action_delete) {
+                    confirmDelete();
+                    return true;
+                }
+                return false;
+            });
+
+            popupMenu.show();
+        });
 
         // Получаем данные из Intent
         String title = getIntent().getStringExtra("task_title");
         String description = getIntent().getStringExtra("task_description");
         String date = getIntent().getStringExtra("task_date");
         id_task = getIntent().getStringExtra("id_task");
+        invitation_cod = getIntent().getStringExtra("invitation_cod");
 
         // Настраиваем View
         EditText titleView = findViewById(R.id.detail_title);
-        TextView descView = findViewById(R.id.detail_description);
+        //TextView descView = findViewById(R.id.detail_description);
         TextView dateView = findViewById(R.id.detail_date);
 
         titleView.setText(title);
-        descView.setText("Описание: "+description);
-        dateView.setText("Окончание: "+date);
+        textDescription.setText(description);
+        //descView.setText("Описание: "+description);
+
+        if (!Objects.equals(date, "")) {
+            dateView.setText("Окончание: " + date);
+        }else{
+            frameLayoutEnd.setVisibility(View.GONE);
+        }
+
+        text_invitation_cod.setText("Код приглашения: "+invitation_cod);
+
+        //копирование в буфер обмена
+        text_invitation_cod.setOnClickListener(v -> {
+            // Получаем ClipboardManager
+            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+
+            // Создаем ClipData
+            ClipData clip = ClipData.newPlainText("label1", invitation_cod);
+
+            // Устанавливаем данные в буфер обмена
+            clipboard.setPrimaryClip(clip);
+
+            // Показываем уведомление
+            Toast.makeText(this, "Текст скопирован", Toast.LENGTH_SHORT).show();
+        });
+
+
 
 
         newDocRef = db.collection("tasks").document(id_task);
@@ -341,6 +411,40 @@ public class DataTask extends AppCompatActivity {
             }
         });
 
+        textDescription.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Вызывается ДО изменения текста
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Вызывается ВО ВРЕМЯ изменения текста
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // Вызывается ПОСЛЕ изменения текста
+                String temp_string = s.toString(); // Обновляем переменную
+                newDocRef.get().addOnSuccessListener(documentSnapshot3 -> {
+                    if (documentSnapshot3.exists()) {
+                        // 3. Получаем текущий массив задач (или создаем новый, если его нет)
+                        //String t_string = documentSnapshot3.get("nameTask").toString();
+//                        String t_string;
+//                        t_string = titleView.getText().toString();
+
+                        // 5. Обновляем документ с новым массивом
+                        newDocRef.update("description", temp_string)
+                                .addOnSuccessListener(aVoid -> Log.d("Firestore", "Массив обновлен!"))
+                                .addOnFailureListener(e -> Log.e("Firestore", "Ошибка: " + e.getMessage()));
+                    }
+                }).addOnFailureListener(e -> {
+                    System.err.println("Ошибка при чтении документа: " + e.getMessage());
+                });
+            }
+        });
+
     }
 
     public void returnBack(View view) {
@@ -525,5 +629,39 @@ public class DataTask extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    private void showMembersDialog() {
+        // Реализация показа участников
+        Toast.makeText(this, "Показать участников", Toast.LENGTH_SHORT).show();
+    }
+
+    private void confirmDelete() {
+        new AlertDialog.Builder(this)
+                .setTitle("Подтверждение")
+                .setMessage("Вы уверены, что хотите удалить?")
+                .setPositiveButton("Удалить", (dialog, which) -> {
+                    // Действие при удалении
+
+                    db.collection("tasks")
+                            .document(id_task)
+                            .get()
+                            .addOnSuccessListener(documentSnapshot -> {
+                                if (documentSnapshot.exists()) {
+                                    // Документ существует - удаляем
+                                    documentSnapshot.getReference().delete();
+                                } else {
+                                    Log.d("Firestore", "Документ не найден");
+                                }
+                            });
+
+                    Toast.makeText(this, "Удалено", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(DataTask.this, MainMenu2.class);
+                    intent.putExtra("must_draw", true);
+                    startActivity(intent);
+                    overridePendingTransition(R.anim.slide_in_left_200, R.anim.slide_out_left_200);
+                })
+                .setNegativeButton("Отмена", null)
+                .show();
     }
 }

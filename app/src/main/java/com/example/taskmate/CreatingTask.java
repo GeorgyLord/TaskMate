@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -19,6 +20,7 @@ import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,6 +31,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
@@ -199,7 +202,8 @@ public class CreatingTask extends AppCompatActivity {
         data_task.put("deadlineTime",deadlineTime );
         data_task.put("done", "false");
         Random random = new Random();
-        data_task.put("invitationCode", random.nextInt(9999999));
+        String invitationCode = String.valueOf(random.nextInt(9999999));
+        data_task.put("invitationCode", invitationCode);
 
         ArrayList<String> participantsList = new ArrayList<>();
         data_task.put("participants", participantsList);
@@ -224,6 +228,12 @@ public class CreatingTask extends AppCompatActivity {
         newDocRef = db.collection(coolectionPath).document();
         newDocRef.set(data_task);
 
+        Map<String, Object> invation_cod_temp = new HashMap<>();
+        invation_cod_temp.put("task", newDocRef.getId());
+        db.collection("invitation")
+                .document(invitationCode)
+                .set(invation_cod_temp);
+
         DocumentReference userRef = db.collection("users").document(id_user);
         userRef.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
@@ -243,6 +253,8 @@ public class CreatingTask extends AppCompatActivity {
         }).addOnFailureListener(e -> {
             System.err.println("Ошибка при чтении документа: " + e.getMessage());
         });
+
+        
 
         Intent intent = new Intent(CreatingTask.this, MainMenu2.class);
         startActivity(intent);
@@ -333,5 +345,57 @@ public class CreatingTask extends AppCompatActivity {
 
     public void addExistingTask(View view) {
         //inviteCodeInput
+        db.collection("invitation")
+                .document(inviteCodeInput.getText().toString())
+                .get()
+                .addOnSuccessListener(document -> {
+                    if (document.exists()) {
+                        if (document.contains("task")) {
+                            String tempString = document.getString("task");
+
+                            SharedPreferences sharedPref = getSharedPreferences("data", Context.MODE_PRIVATE);
+                            String id_user = sharedPref.getString("email", "0");
+
+                            db.collection("users")
+                                    .document(id_user)
+                                    .get()
+                                    .addOnSuccessListener(documentSnapshot -> {
+                                        if (documentSnapshot.exists()) {
+                                            //Добавляем в массив (или создаем новый, если его нет)
+                                            Map<String, Object> updates = new HashMap<>();
+
+                                            if (documentSnapshot.contains("id_of_tasks")) {
+                                                //Если массив существует - добавляем элемент
+                                                updates.put("id_of_tasks", FieldValue.arrayUnion(tempString));
+                                            } else {
+                                                //Если массива нет - создаем новый с одним элементом
+                                                List<String> newArray = new ArrayList<>();
+                                                newArray.add(tempString);
+                                                updates.put("id_of_tasks", newArray);
+                                            }
+
+                                            //Применяем обновление
+                                            db.collection("users")
+                                                    .document(id_user)
+                                                    .update(updates);
+
+                                            Intent intent = new Intent(CreatingTask.this, MainMenu2.class);
+                                            startActivity(intent);
+                                            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
+                                        } else {
+                                            Toast.makeText(this, "Неверный код", Toast.LENGTH_SHORT).show();
+                                            Log.w("Firestore", "Документ пользователя не найден");
+                                        }
+                                    });
+
+                        }
+
+                    } else {
+                        Toast.makeText(this, "Приглашение не найдено", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Ошибка: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 }

@@ -82,7 +82,7 @@ public class RegisterActivity extends AppCompatActivity {
             passwordEditText.setError("Введите пароль");
             return;
         }
-        if (password.length() < 8) {
+        if (password.length() < 6) {
             passwordEditText.setError("Пароль должен содержать минимум 8 символов");
             return;
         }

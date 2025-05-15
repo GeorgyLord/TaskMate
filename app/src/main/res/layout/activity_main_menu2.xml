@@ -102,14 +102,19 @@
             <FrameLayout
                 android:id="@+id/main_content"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone">
+                android:layout_height="match_parent">
 
-                <LinearLayout
-                    android:id="@+id/renderingContainer"
+                <ScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical" />
+                    android:layout_height="match_parent">
+
+                    <LinearLayout
+                        android:id="@+id/renderingContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingBottom="100dp" />
+                </ScrollView>
 
                 <LinearLayout
                     android:id="@+id/emptyRenderingContainer"
@@ -205,7 +210,8 @@
             <FrameLayout
                 android:id="@+id/my_content"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -420,7 +426,7 @@
             <Button
                 android:id="@+id/buttonOpenMain"
                 style="@style/WhiteButtonStyle"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@android:color/white"
@@ -437,7 +443,7 @@
             <Button
                 android:id="@+id/buttonOpenCalendar"
                 style="@style/WhiteButtonStyle"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@color/white"
@@ -454,7 +460,7 @@
             <Button
                 android:id="@+id/buttonOpenMy"
                 style="@style/WhiteButtonStyle"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@color/white"

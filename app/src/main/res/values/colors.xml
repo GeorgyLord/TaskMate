@@ -5,4 +5,7 @@
     <color name="pale_red">#FFCDD2</color>
     <color name="dark_red">#4B0101</color>
     <color name="light_gray">#BDBDBD</color>
+    <color name="identifier_green">#82FF22</color>
+    <color name="identifier_orange">#FFB922</color>
+    <color name="identifier_red">#FF5722</color>
 </resources>

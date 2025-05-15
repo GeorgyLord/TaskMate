@@ -73,6 +73,7 @@ public class MainMenu2 extends AppCompatActivity {
     private long numberSelectedMenu = 1;
     private TextView emailTitle;
     private EditText nameTitle;
+    private String current_email;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -121,6 +122,7 @@ public class MainMenu2 extends AppCompatActivity {
         SharedPreferences sharedPref_email = getSharedPreferences("data", Context.MODE_PRIVATE);
         String tempEmail = sharedPref_email.getString("email", "example@email.ru"); // второй параметр — значение по умолчанию
         emailTitle.setText(tempEmail);
+        current_email = tempEmail;
 
         nameTitle = findViewById(R.id.nameTitle);
 
@@ -242,7 +244,14 @@ public class MainMenu2 extends AppCompatActivity {
                 CheckBox checkBoxTask = newCard.findViewById(R.id.checkBoxTask);
 
                 titleText.setText(sharedPref1.getString("title_task"+String.valueOf(i), "None"));
-                descriptionText.setText(sharedPref1.getString("description"+String.valueOf(i), "None"));
+
+                String temp_dedescription = sharedPref1.getString("description"+String.valueOf(i), "None");
+                if (!temp_dedescription.equals("")) {
+                    descriptionText.setText(temp_dedescription);
+                }
+                else {
+                    descriptionText.setText("Пусто");
+                }
                 String id_task = sharedPref1.getString("id_task"+String.valueOf(i), "None");
 
                 String temp_string = sharedPref1.getString("deadlineDate"+String.valueOf(i), "None");
@@ -255,11 +264,14 @@ public class MainMenu2 extends AppCompatActivity {
 
                 String temp_priority = sharedPref1.getString("priority"+String.valueOf(i), "None");
                 if (temp_priority.equals("0")){
-                    priorityIndicator.setBackgroundColor(0xFF82FF22);
+                    priorityIndicator.setBackgroundColor(getResources().getColor(R.color.identifier_green));
+                    //priorityIndicator.setBackgroundColor(0xFF82FF22); // 0xFF82FF22
                 } else if (temp_priority.equals("1")) {
-                    priorityIndicator.setBackgroundColor(0xFFB922FF);
+                    priorityIndicator.setBackgroundColor(getResources().getColor(R.color.identifier_orange));
+                    //priorityIndicator.setBackgroundColor(0xFFB922FF); // 0xFFB922FF
                 }else{
-                    priorityIndicator.setBackgroundColor(0xFFFF5722);
+                    priorityIndicator.setBackgroundColor(getResources().getColor(R.color.identifier_red));
+                    //priorityIndicator.setBackgroundColor(0xFFFF5722); // 0xFFFF5722
                 }
 
                 // Обрабатываем клик
@@ -481,6 +493,7 @@ public class MainMenu2 extends AppCompatActivity {
                             String temp_deadlineDate = documentSnapshot2.getString("deadlineDate");
                             String temp_priority = documentSnapshot2.getString("priority");
                             String temp_done = documentSnapshot2.getString("done");
+                            String temp_invitationCode = documentSnapshot2.getString("invitationCode");
 //                            String temp_boolRadioButtonHigh = documentSnapshot2.getString("boolRadioButtonHigh");
 //                            String temp_boolRadioButtonLow = documentSnapshot2.getString("boolRadioButtonLow");
 //                            String temp_boolRadioButtonMedium = documentSnapshot2.getString("boolRadioButtonMedium");
@@ -491,6 +504,7 @@ public class MainMenu2 extends AppCompatActivity {
                             editor2.putString("deadlineDate"+finalI, temp_deadlineDate);
                             editor2.putString("priority"+finalI, temp_priority);
                             editor2.putString("done"+finalI, temp_done);
+                            editor2.putString("invitationCode"+finalI, temp_invitationCode);
 
 //                            if (Objects.equals(temp_boolRadioButtonHigh, "true")){
 //                                editor2.putString("priority"+finalI, "0");
@@ -501,6 +515,32 @@ public class MainMenu2 extends AppCompatActivity {
 //                            }
 
                             editor2.apply();
+                        }
+                        else{
+                            db.collection("users")
+                                    .document(current_email)
+                                    .get()
+                                    .addOnSuccessListener(documentSnapshot_delete_task -> {
+                                        if (documentSnapshot_delete_task.exists()) {
+                                            // Документ существует - удаляем
+
+                                            List<String> user_tasks = new ArrayList<>();
+
+                                            if (documentSnapshot_delete_task.contains("id_of_tasks")) {
+                                                // Если поле "tasks" существует, получаем его
+                                                user_tasks = (List<String>) documentSnapshot.get("id_of_tasks");
+                                            }
+
+                                            user_tasks.remove(list.get(finalI));
+
+                                            // Обновляем документ в Firestore
+                                            db.collection("users")
+                                                    .document(current_email)
+                                                    .update("id_of_tasks", user_tasks);
+                                        } else {
+                                            Log.d("Firestore", "Документ не найден");
+                                        }
+                                    });
                         }
                     }).addOnFailureListener(e -> {
                         System.err.println("Ошибка при чтении документа: " + e.getMessage());
@@ -533,7 +573,14 @@ public class MainMenu2 extends AppCompatActivity {
                     CheckBox checkBox = newCard.findViewById(R.id.checkBoxTask);
 
                     titleText.setText(sharedPref2.getString("title_task"+String.valueOf(i), "None"));
-                    descriptionText.setText(sharedPref2.getString("description"+String.valueOf(i), "None"));
+
+                    String temp_dedescription = sharedPref2.getString("description"+String.valueOf(i), "None");
+                    if (!temp_dedescription.equals("")) {
+                        descriptionText.setText(temp_dedescription);
+                    }
+                    else {
+                        descriptionText.setText("Пусто");
+                    }
                     String id_task = sharedPref2.getString("id_task"+String.valueOf(i), "None");
                     String bool_done = sharedPref2.getString("done"+String.valueOf(i), "false");
 
@@ -547,15 +594,19 @@ public class MainMenu2 extends AppCompatActivity {
 
                     String temp_priority = sharedPref2.getString("priority"+String.valueOf(i), "None");
                     if (temp_priority.equals("Низкий")){
-                        priorityIndicator.setBackgroundColor(0xFF82FF22);
+                        priorityIndicator.setBackgroundColor(getResources().getColor(R.color.identifier_green));
+//                        priorityIndicator.setBackgroundColor(0xFF82FF22);
                         //priorityIndicator.setBackground(Drawable.createFromPath("#82FF22FF"));
                     } else if (temp_priority.equals("Средний")) {
-                        priorityIndicator.setBackgroundColor(0xFFB922FF);
+                        priorityIndicator.setBackgroundColor(getResources().getColor(R.color.identifier_orange));
+//                        priorityIndicator.setBackgroundColor(0xFFB922FF);
                         //priorityIndicator.setBackground(Drawable.createFromPath("#FFB922FF"));
                     }else{
-                        priorityIndicator.setBackgroundColor(0xFFFF5722);
+                        priorityIndicator.setBackgroundColor(getResources().getColor(R.color.identifier_red));
+//                        priorityIndicator.setBackgroundColor(0xFFFF5722);
                         //priorityIndicator.setBackground(Drawable.createFromPath("#FF5722FF"));
                     }
+                    String temp_invitationCode = sharedPref2.getString("invitationCode"+String.valueOf(i), "None");
 
                     // Обрабатываем клик
                     newCard.setOnClickListener(v -> {
@@ -576,6 +627,7 @@ public class MainMenu2 extends AppCompatActivity {
                         intent.putExtra("task_description", descriptionText.getText().toString());
                         intent.putExtra("task_date", taskDueDateText.getText().toString());
                         intent.putExtra("priority", temp_priority);
+                        intent.putExtra("invitation_cod", temp_invitationCode);
 
 
                         startActivity(intent);

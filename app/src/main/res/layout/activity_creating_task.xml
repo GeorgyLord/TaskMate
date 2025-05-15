@@ -58,8 +58,7 @@
             <ScrollView
                 android:id="@+id/formNew"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone">
+                android:layout_height="match_parent">
 
                 <LinearLayout
                     android:id="@+id/block2"
@@ -479,7 +478,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:gravity="center|center_vertical"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <EditText
                         android:id="@+id/inviteCodeInput"
@@ -493,7 +493,7 @@
                         android:inputType="numberDecimal"
                         android:maxLength="10"
                         android:textAlignment="center"
-                        android:textSize="28dp" />
+                        android:textSize="30dp" />
 
                     <Button
                         android:id="@+id/button7"
@@ -514,7 +514,8 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="text"
-                android:text="Name" />
+                android:text="Name"
+                android:visibility="gone" />
         </LinearLayout>
 
         <LinearLayout
