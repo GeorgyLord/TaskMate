@@ -61,6 +61,9 @@ public class DataTask extends AppCompatActivity {
     private EditText textDescription;
     private ImageButton btnOverflow;
     private PopupMenu popupMenu;
+    private String title;
+    private String description;
+    private String date;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,9 +107,9 @@ public class DataTask extends AppCompatActivity {
         });
 
         // Получаем данные из Intent
-        String title = getIntent().getStringExtra("task_title");
-        String description = getIntent().getStringExtra("task_description");
-        String date = getIntent().getStringExtra("task_date");
+        title = getIntent().getStringExtra("task_title");
+        description = getIntent().getStringExtra("task_description");
+        date = getIntent().getStringExtra("task_date");
         id_task = getIntent().getStringExtra("id_task");
         invitation_cod = getIntent().getStringExtra("invitation_cod");
 
@@ -119,7 +122,7 @@ public class DataTask extends AppCompatActivity {
         textDescription.setText(description);
         //descView.setText("Описание: "+description);
 
-        if (!Objects.equals(date, "")) {
+        if (!Objects.equals(date, "") && !Objects.equals(date, null)) {
             dateView.setText("Окончание: " + date);
         }else{
             frameLayoutEnd.setVisibility(View.GONE);
@@ -634,6 +637,14 @@ public class DataTask extends AppCompatActivity {
     private void showMembersDialog() {
         // Реализация показа участников
         Toast.makeText(this, "Показать участников", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(DataTask.this, TaskUsers.class);
+        intent.putExtra("id_task", id_task);
+        intent.putExtra("title", title);
+        intent.putExtra("description", description);
+        intent.putExtra("date", date);
+        intent.putExtra("invitation_cod", invitation_cod);
+        startActivity(intent);
+        //overridePendingTransition(R.anim.slide_in_left_200, R.anim.slide_out_left_200);
     }
 
     private void confirmDelete() {
