@@ -356,6 +356,10 @@ public class CreatingTask extends AppCompatActivity {
                             SharedPreferences sharedPref = getSharedPreferences("data", Context.MODE_PRIVATE);
                             String id_user = sharedPref.getString("email", "0");
 
+                            db.collection("tasks")
+                                    .document(tempString)
+                                    .update("participants", FieldValue.arrayUnion(id_user));
+
                             db.collection("users")
                                     .document(id_user)
                                     .get()

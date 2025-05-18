@@ -3,6 +3,7 @@ package com.example.taskmate;
 import static android.graphics.Color.parseColor;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -280,7 +281,7 @@ public class MainMenu2 extends AppCompatActivity {
                     // Передаем данные
                     intent.putExtra("id_task", id_task);
                     intent.putExtra("task_title", titleText.getText().toString());
-                    intent.putExtra("task_description", descriptionText.getText().toString());
+                    intent.putExtra("task_description", temp_dedescription);
                     intent.putExtra("task_date", taskDueDateText.getText().toString());
 
                     startActivity(intent);
@@ -624,7 +625,7 @@ public class MainMenu2 extends AppCompatActivity {
                         // Передаем данные
                         intent.putExtra("id_task", id_task);
                         intent.putExtra("task_title", titleText.getText().toString());
-                        intent.putExtra("task_description", descriptionText.getText().toString());
+                        intent.putExtra("task_description", temp_dedescription);
                         intent.putExtra("task_date", taskDueDateText.getText().toString());
                         intent.putExtra("priority", temp_priority);
                         intent.putExtra("invitation_cod", temp_invitationCode);
@@ -694,6 +695,50 @@ public class MainMenu2 extends AppCompatActivity {
         lineSearch.setVisibility(View.GONE);
         buttonClearSearchLine.setVisibility(View.GONE);
     }
+/*
+    public void showParticipantsDialog(Context context, List<User> participants) {
+        // Создаем диалог
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_participants, null);
+        builder.setView(dialogView);
+        AlertDialog dialog = builder.create();
+
+        // Контейнер для карточек
+        LinearLayout container = dialogView.findViewById(R.id.participantsContainer);
+
+        // Добавляем карточки для каждого участника
+        for (User user : participants) {
+            View cardView = LayoutInflater.from(context).inflate(R.layout.item_participant, container, false);
+
+            // Настраиваем карточку
+            TextView nameView = cardView.findViewById(R.id.userName);
+            nameView.setText(user.getName());
+
+            ImageButton deleteButton = cardView.findViewById(R.id.deleteButton);
+            deleteButton.setOnClickListener(v -> {
+                // Удаляем участника
+                removeParticipant(user.getId());
+                container.removeView(cardView);
+                Toast.makeText(context, user.getName() + " удален", Toast.LENGTH_SHORT).show();
+            });
+
+            // Добавляем карточку в контейнер
+            container.addView(cardView);
+        }
+
+        // Показываем диалог
+        dialog.show();
+    }
+
+    private void removeParticipant(String userId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("tasks").document(taskId)
+                .update("participants", FieldValue.arrayRemove(userId))
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Ошибка удаления участника", e);
+                });
+    }
+    */
 }
 
 // E8DBFDFF - бледно фиолетовый
