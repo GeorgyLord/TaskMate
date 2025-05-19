@@ -10,6 +10,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,7 +22,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.CheckBox;
@@ -30,6 +33,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,11 +47,13 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.datepicker.DayViewDecorator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -83,7 +89,7 @@ public class MainMenu2 extends AppCompatActivity {
     public EditText lineSearch;
     private Handler handler = new Handler();
     public ImageView buttonClearSearchLine;
-    private RecyclerView recyclerView;
+    //private RecyclerView recyclerView;
     private List<Task> tasks = new ArrayList<>();
     private long numberSelectedMenu = 1;
     private TextView emailTitle;
@@ -93,8 +99,9 @@ public class MainMenu2 extends AppCompatActivity {
     private TextView textCompletedTasks;
     private TextView textNotCompletedTasks;
     private LinearLayout calandary_container;
-    private static final String CHANNEL_ID = "my_channel";
-    private static final String CHANNEL_NAME = "My Channel";
+    //private static final String CHANNEL_ID = "my_channel";
+    //private static final String CHANNEL_NAME = "My Channel";
+    private CalendarView calendarView;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -281,7 +288,7 @@ public class MainMenu2 extends AppCompatActivity {
             return false; // Событие не обработано
         });
 
-        CalendarView calendarView = findViewById(R.id.calendar);
+        calendarView = findViewById(R.id.calendar);
         calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
             String date = dayOfMonth + "." + (month + 1) + "." + year;
             //Toast.makeText(this, "Выбрана дата: " + date, Toast.LENGTH_SHORT).show();
@@ -555,6 +562,7 @@ public class MainMenu2 extends AppCompatActivity {
                         if (documentSnapshot2.exists()) {
                             String tdate = String.valueOf(documentSnapshot2.getString("deadlineDate"));
                             if (!Objects.equals(tdate, "Указать дату")) {
+
                                 if(Objects.equals(removeLeadingZerosFromDate(tdate), removeLeadingZerosFromDate(getCurrentDate()))) {
                                     CardView newCard = (CardView) LayoutInflater.from(this).inflate(R.layout.card_calandary, calandary_container, false);
                                     String tpriority = documentSnapshot2.getString("priority");
@@ -698,6 +706,7 @@ public class MainMenu2 extends AppCompatActivity {
         // Запускаем работу
         WorkManager.getInstance(context).enqueue(workRequest);
     }
+    /*
     public static void showNotification(Context context, String title, String message) {
         NotificationManager manager = (NotificationManager)
                 context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -730,6 +739,7 @@ public class MainMenu2 extends AppCompatActivity {
         // Показываем уведомление
         manager.notify(1, notification); // ID может быть любым
     }
+    */
 
     private void deleteUserDataFromFirestore(String userId) {
         db.collection("users").document(userId)
