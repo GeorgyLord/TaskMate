@@ -8,4 +8,5 @@
     <color name="identifier_green">#82FF22</color>
     <color name="identifier_orange">#FFB922</color>
     <color name="identifier_red">#FF5722</color>
+    <color name="button_delete">#E00000</color>
 </resources>

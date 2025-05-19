@@ -183,6 +183,25 @@
                     </FrameLayout>
 
                     <FrameLayout
+                        android:id="@+id/frameLayoutCategory"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginRight="15dp"
+                        android:layout_marginBottom="7dp"
+                        android:background="#F1EFFF"
+                        android:padding="10dp">
+
+                        <TextView
+                            android:id="@+id/textCategory"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="TextView"
+                            android:textSize="20dp" />
+                    </FrameLayout>
+
+                    <FrameLayout
                         android:id="@+id/frameLayoutEnd"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

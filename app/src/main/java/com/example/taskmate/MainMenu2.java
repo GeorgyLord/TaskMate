@@ -4,10 +4,14 @@ import static android.graphics.Color.parseColor;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Paint;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -44,15 +48,25 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+import java.util.concurrent.TimeUnit;
 
 public class MainMenu2 extends AppCompatActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-    public TextView title;
+    public TextView titleWindow;
     public FrameLayout main_content;
     public FrameLayout calendar_content;
     public FrameLayout my_content;
@@ -75,6 +89,12 @@ public class MainMenu2 extends AppCompatActivity {
     private TextView emailTitle;
     private EditText nameTitle;
     private String current_email;
+    // Счетчики
+    private TextView textCompletedTasks;
+    private TextView textNotCompletedTasks;
+    private LinearLayout calandary_container;
+    private static final String CHANNEL_ID = "my_channel";
+    private static final String CHANNEL_NAME = "My Channel";
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -95,6 +115,12 @@ public class MainMenu2 extends AppCompatActivity {
 //        editor.putLong("currentCountTasksRendered", currentCountTasksRendered);
 //        editor.apply();
 
+        textCompletedTasks = findViewById(R.id.textCompletedTasks);
+        textNotCompletedTasks = findViewById(R.id.textNotCompletedTasks);
+        calandary_container = findViewById(R.id.calandary_container);
+        textCompletedTasks.setText("0");
+        textNotCompletedTasks.setText("0");
+
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int screenWidth = displayMetrics.widthPixels; // Ширина экрана в пикселях
@@ -102,7 +128,7 @@ public class MainMenu2 extends AppCompatActivity {
 
         imageViewSearch = findViewById(R.id.imageViewSearch);
         lineSearch = findViewById(R.id.lineSearch);
-        title = findViewById(R.id.screenName);
+        titleWindow = findViewById(R.id.screenName);
         buttonClearSearchLine = findViewById(R.id.buttonClearSearchLine);
         //Button buttonApplySearch = findViewById(R.id.applySearch);
         LinearLayout header = findViewById(R.id.block1);
@@ -171,9 +197,56 @@ public class MainMenu2 extends AppCompatActivity {
                         });
             }
         });
+        lineSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Вызывается ДО изменения текста
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Вызывается ВО ВРЕМЯ изменения текста
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // Вызывается ПОСЛЕ изменения текста
+                String temp_string = s.toString(); // Обновляем переменную
+                List<CardView> cardViews;
+                // Список для хранения найденных CardView
+                cardViews = new ArrayList<>();
+
+                // Перебираем все дочерние элементы
+                for (int i = 0; i < renderingContainer.getChildCount(); i++) {
+                    View child = renderingContainer.getChildAt(i);
+
+                    // Проверяем, является ли элемент CardView
+                    if (child instanceof CardView) {
+                        cardViews.add((CardView) child);
+                    }
+                }
+
+                if(!temp_string.equals("")){
+                    for (int i = 0; i < cardViews.size(); i++) {
+                        TextView tw = cardViews.get(i).findViewById(R.id.taskTitle);
+                        String name_t = String.valueOf(tw.getText());
+                        System.out.println(name_t+" "+temp_string);
+                        if(!name_t.contains(temp_string)){
+                            cardViews.get(i).setVisibility(View.GONE);
+                        }
+                    }
+                }else{
+                    for (int i = 0; i < cardViews.size(); i++) {
+                        cardViews.get(i).setVisibility(View.VISIBLE);
+                    }
+                }
+
+            }
+        });
 
         imageViewSearch.setOnClickListener(v -> {
-            title.setVisibility(View.GONE);
+            titleWindow.setVisibility(View.GONE);
             imageViewSearch.setVisibility(View.GONE);
             lineSearch.setVisibility(View.VISIBLE);
             buttonClearSearchLine.setVisibility(View.VISIBLE);
@@ -191,7 +264,7 @@ public class MainMenu2 extends AppCompatActivity {
                 if (header.getVisibility() == View.VISIBLE && !isTouchInsideView(event, header)) {
 
                     // Вызываем функцию (например, скрываем EditText и клавиатуру)
-                    title.setVisibility(View.VISIBLE);
+                    titleWindow.setVisibility(View.VISIBLE);
                     if (numberSelectedMenu==1) {
                         imageViewSearch.setVisibility(View.VISIBLE);
                     }
@@ -210,8 +283,44 @@ public class MainMenu2 extends AppCompatActivity {
 
         CalendarView calendarView = findViewById(R.id.calendar);
         calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
-            String date = dayOfMonth + "/" + (month + 1) + "/" + year;
-            Toast.makeText(this, "Выбрана дата: " + date, Toast.LENGTH_SHORT).show();
+            String date = dayOfMonth + "." + (month + 1) + "." + year;
+            //Toast.makeText(this, "Выбрана дата: " + date, Toast.LENGTH_SHORT).show();
+
+
+            DocumentReference userRef = db.collection("users").document(tempEmail);
+            userRef.get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    List<String> user_tasks = (List<String>) documentSnapshot.get("id_of_tasks");
+                    calandary_container.removeAllViews();
+                    for (int i = 0; i < user_tasks.size(); i++) {
+                        DocumentReference taskRef = db.collection("tasks").document(user_tasks.get(i));
+                        taskRef.get().addOnSuccessListener(documentSnapshot2 -> {
+                            if (documentSnapshot2.exists()) {
+                                String tdate = String.valueOf(documentSnapshot2.getString("deadlineDate"));
+//                                System.out.println("ДАТА "+tdate);
+//                                System.out.println("ДОЛЖНО "+date);
+                                if (!Objects.equals(tdate, "Указать дату")) {
+                                    if(Objects.equals(removeLeadingZerosFromDate(tdate), date)) {
+                                        CardView newCard = (CardView) LayoutInflater.from(this).inflate(R.layout.card_calandary, calandary_container, false);
+                                        String tpriority = documentSnapshot2.getString("priority");
+                                        String tnameTask = documentSnapshot2.getString("nameTask");
+                                        TextView tt = newCard.findViewById(R.id.cal_name);
+                                        View vv = newCard.findViewById(R.id.cal_color);
+                                        tt.setText(tnameTask);
+                                        if (Objects.equals(tpriority, "Низкий")) {
+                                            vv.setBackgroundColor(getResources().getColor(R.color.identifier_green));
+                                        } else if (Objects.equals(tpriority, "Средний")) {
+                                            vv.setBackgroundColor(getResources().getColor(R.color.identifier_orange));
+                                        } else if (Objects.equals(tpriority, "Высокий")) {
+                                            vv.setBackgroundColor(getResources().getColor(R.color.identifier_red));
+                                        }
+                                        calandary_container.addView(newCard);
+                                    }
+                                }
+                            }});
+                    }
+                }
+            });
         });
 
         // Определяем задачу, которая будет выполняться каждые 5 секунд
@@ -244,6 +353,8 @@ public class MainMenu2 extends AppCompatActivity {
                 View priorityIndicator = newCard.findViewById(R.id.priorityIndicator);
                 CheckBox checkBoxTask = newCard.findViewById(R.id.checkBoxTask);
 
+                String category = sharedPref1.getString("boolSpinnerCategory"+String.valueOf(i), "None");
+
                 titleText.setText(sharedPref1.getString("title_task"+String.valueOf(i), "None"));
 
                 String temp_dedescription = sharedPref1.getString("description"+String.valueOf(i), "None");
@@ -258,6 +369,47 @@ public class MainMenu2 extends AppCompatActivity {
                 String temp_string = sharedPref1.getString("deadlineDate"+String.valueOf(i), "None");
                 if (!temp_string.equals("Указать дату")) {
                     taskDueDateText.setText(temp_string);
+
+                    try {
+                        // Парсим дату из строки "dd.MM.yyyy"
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+                        Date dueDate = sdf.parse(temp_string);
+
+                        // Создаем календарь для dueDate
+                        Calendar dueCalendar = Calendar.getInstance();
+                        dueCalendar.setTime(dueDate);
+
+                        // Вычитаем 1 день для напоминания
+                        dueCalendar.add(Calendar.DAY_OF_YEAR, -1);
+
+                        // Устанавливаем время напоминания (12:00)
+                        dueCalendar.set(Calendar.HOUR_OF_DAY, 12);
+                        dueCalendar.set(Calendar.MINUTE, 0);
+                        dueCalendar.set(Calendar.SECOND, 0);
+
+                        // Текущее время
+                        long currentTime = System.currentTimeMillis();
+                        long triggerTime = dueCalendar.getTimeInMillis();
+
+                        // Проверяем, что напоминание в будущем
+                        if (triggerTime > currentTime) {
+                            long delay = triggerTime - currentTime;
+
+                            scheduleNotification(
+                                    this,
+                                    delay,
+                                    TimeUnit.MILLISECONDS,
+                                    "Внимание",
+                                    "Завтра у вас дедлайн (" + temp_string + ")"
+                            );
+                        } else {
+                            Log.w("Notification", "Дата напоминания уже прошла");
+                        }
+
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                        Log.e("Notification", "Ошибка парсинга даты: " + temp_string);
+                    }
                 }
                 else{
                     taskDueDateText.setText("");
@@ -283,6 +435,7 @@ public class MainMenu2 extends AppCompatActivity {
                     intent.putExtra("task_title", titleText.getText().toString());
                     intent.putExtra("task_description", temp_dedescription);
                     intent.putExtra("task_date", taskDueDateText.getText().toString());
+                    intent.putExtra("category", category);
 
                     startActivity(intent);
                 });
@@ -305,6 +458,14 @@ public class MainMenu2 extends AppCompatActivity {
 
                     }
                 });
+                /*
+                if(checkBoxTask.isChecked()){
+                    tasks_completed+=1;
+                }
+                else{
+                    tasks_not_completed+=1;
+                }
+                */
             }
         }
     }
@@ -315,9 +476,22 @@ public class MainMenu2 extends AppCompatActivity {
         // Удаляем задачу при уничтожении активности, чтобы избежать утечек памяти
         handler.removeCallbacks(runnable);
     }
+    public static String removeLeadingZerosFromDate(String inputDate) {
+        String[] parts = inputDate.split("\\.");
+        if (parts.length != 3) {
+            throw new IllegalArgumentException("Некорректный формат даты. Ожидается dd.MM.yyyy");
+        }
+
+        int day = Integer.parseInt(parts[0]);
+        int month = Integer.parseInt(parts[1]);
+        int year = Integer.parseInt(parts[2]);
+
+        return day + "." + month + "." + year;
+    }
 
     private void update() {
         drawingTaskCards();
+        //showNotification(this, "Важное сообщение", "Привет, это тестовое уведомление!");
     }
 
     // Проверка, было ли нажатие внутри View
@@ -333,6 +507,8 @@ public class MainMenu2 extends AppCompatActivity {
     }
 
     public void openHomePage(View view) {
+        textCompletedTasks.setText("0");
+        textNotCompletedTasks.setText("0");
         calendar_content.setVisibility(View.GONE);
         main_content.setVisibility(View.VISIBLE);
         my_content.setVisibility(View.GONE);
@@ -341,7 +517,7 @@ public class MainMenu2 extends AppCompatActivity {
         buttonOpenMain.setTextColor(parseColor("#2196F3"));
         buttonOpenMy.setTextColor(parseColor("#5F5F5F"));
 
-        title.setText("Главное меню");
+        titleWindow.setText("Главное меню");
 
         imageViewSearch.setVisibility(View.VISIBLE);
 
@@ -349,6 +525,8 @@ public class MainMenu2 extends AppCompatActivity {
     }
 
     public void openCalendar(View view) {
+        textCompletedTasks.setText("0");
+        textNotCompletedTasks.setText("0");
         calendar_content.setVisibility(View.VISIBLE);
         main_content.setVisibility(View.GONE);
         my_content.setVisibility(View.GONE);
@@ -357,11 +535,47 @@ public class MainMenu2 extends AppCompatActivity {
         buttonOpenMain.setTextColor(parseColor("#5F5F5F"));
         buttonOpenMy.setTextColor(parseColor("#5F5F5F"));
 
-        title.setText("Календарь");
+        titleWindow.setText("Календарь");
 
         imageViewSearch.setVisibility(View.GONE);
 
         numberSelectedMenu = 2;
+
+        SharedPreferences sharedPref1 = getSharedPreferences("data", Context.MODE_PRIVATE);
+        String user_email = sharedPref1.getString("email", "0");
+
+        DocumentReference userRef = db.collection("users").document(user_email);
+        userRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                List<String> user_tasks = (List<String>) documentSnapshot.get("id_of_tasks");
+                calandary_container.removeAllViews();
+                for (int i = 0; i < user_tasks.size(); i++) {
+                    DocumentReference taskRef = db.collection("tasks").document(user_tasks.get(i));
+                    taskRef.get().addOnSuccessListener(documentSnapshot2 -> {
+                        if (documentSnapshot2.exists()) {
+                            String tdate = String.valueOf(documentSnapshot2.getString("deadlineDate"));
+                            if (!Objects.equals(tdate, "Указать дату")) {
+                                if(Objects.equals(removeLeadingZerosFromDate(tdate), removeLeadingZerosFromDate(getCurrentDate()))) {
+                                    CardView newCard = (CardView) LayoutInflater.from(this).inflate(R.layout.card_calandary, calandary_container, false);
+                                    String tpriority = documentSnapshot2.getString("priority");
+                                    String tnameTask = documentSnapshot2.getString("nameTask");
+                                    TextView tt = newCard.findViewById(R.id.cal_name);
+                                    View vv = newCard.findViewById(R.id.cal_color);
+                                    tt.setText(tnameTask);
+                                    if (Objects.equals(tpriority, "Низкий")) {
+                                        vv.setBackgroundColor(getResources().getColor(R.color.identifier_green));
+                                    } else if (Objects.equals(tpriority, "Средний")) {
+                                        vv.setBackgroundColor(getResources().getColor(R.color.identifier_orange));
+                                    } else if (Objects.equals(tpriority, "Высокий")) {
+                                        vv.setBackgroundColor(getResources().getColor(R.color.identifier_red));
+                                    }
+                                    calandary_container.addView(newCard);
+                                }
+                            }
+                        }});
+                }
+            }
+        });
     }
 
     public void openMy(View view) {
@@ -373,11 +587,45 @@ public class MainMenu2 extends AppCompatActivity {
         buttonOpenMain.setTextColor(parseColor("#5F5F5F"));
         buttonOpenMy.setTextColor(parseColor("#2196F3"));
 
-        title.setText("Мой аккаунт");
+        titleWindow.setText("Мой аккаунт");
 
         imageViewSearch.setVisibility(View.GONE);
 
         numberSelectedMenu = 3;
+
+        SharedPreferences sharedPref = getSharedPreferences("data", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putLong("tasks_completed", 0);
+        editor.putLong("tasks_not_completed", 0);
+        editor.apply();
+
+        SharedPreferences sharedPref1 = getSharedPreferences("data", Context.MODE_PRIVATE);
+        String user_email = sharedPref1.getString("email", "0");
+
+        textCompletedTasks.setText("0");
+        textNotCompletedTasks.setText("0");
+//        SharedPreferences sharedPref2 = getSharedPreferences("data", Context.MODE_PRIVATE);
+//        SharedPreferences.Editor editor2 = sharedPref.edit();
+        DocumentReference userRef = db.collection("users").document(user_email);
+        userRef.get().addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        List<String> user_tasks = (List<String>) documentSnapshot.get("id_of_tasks");
+                        for (int i = 0; i < user_tasks.size(); i++) {
+                            DocumentReference taskRef = db.collection("tasks").document(user_tasks.get(i));
+                            taskRef.get().addOnSuccessListener(documentSnapshot2 -> {
+                                if (documentSnapshot2.exists()) {
+                                    String bool_done = documentSnapshot2.getString("done");
+                                    if (bool_done.equals("true")) {
+                                        textCompletedTasks.setText(String.valueOf(Integer.parseInt((String) textCompletedTasks.getText())+1));
+                                    } else {
+                                        textNotCompletedTasks.setText(String.valueOf(Integer.parseInt((String) textNotCompletedTasks.getText())+1));
+                                        //editor2.putLong("tasks_not_completed", sharedPref.getLong("tasks_not_completed", 0)+1);
+                                    }
+                                    System.out.println("MY");
+                                }});
+                        }
+                    }
+        });
     }
 
     public void openFormOfCreatingTask(View view) {
@@ -422,6 +670,65 @@ public class MainMenu2 extends AppCompatActivity {
             Intent intent = new Intent(MainMenu2.this, LoginActivity.class);
             startActivity(intent);
         }
+    }
+
+    public static String getCurrentDate() {
+        return new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(new Date());
+    }
+
+    public static void scheduleNotification(
+            Context context,
+            long delay,
+            TimeUnit timeUnit,
+            String title,
+            String message
+    ) {
+        // Создаем входные данные
+        Data inputData = new Data.Builder()
+                .putString("title", title)
+                .putString("message", message)
+                .build();
+
+        // Создаем запрос на выполнение работы
+        OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class)
+                .setInputData(inputData)
+                .setInitialDelay(delay, timeUnit) // Устанавливаем задержку
+                .build();
+
+        // Запускаем работу
+        WorkManager.getInstance(context).enqueue(workRequest);
+    }
+    public static void showNotification(Context context, String title, String message) {
+        NotificationManager manager = (NotificationManager)
+                context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // Создаем канал (требуется для API 26+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    CHANNEL_ID,
+                    CHANNEL_NAME,
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
+            manager.createNotificationChannel(channel);
+        }
+
+        // Строим уведомление
+        Notification.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            builder = new Notification.Builder(context, CHANNEL_ID);
+        } else {
+            builder = new Notification.Builder(context);
+        }
+
+        Notification notification = builder
+                .setContentTitle(title)
+                .setContentText(message)
+                .setSmallIcon(R.drawable.ic_notification) // Ваша иконка
+                .setAutoCancel(true)
+                .build();
+
+        // Показываем уведомление
+        manager.notify(1, notification); // ID может быть любым
     }
 
     private void deleteUserDataFromFirestore(String userId) {
@@ -495,6 +802,7 @@ public class MainMenu2 extends AppCompatActivity {
                             String temp_priority = documentSnapshot2.getString("priority");
                             String temp_done = documentSnapshot2.getString("done");
                             String temp_invitationCode = documentSnapshot2.getString("invitationCode");
+                            String temp_category = documentSnapshot2.getString("boolSpinnerCategory");
 //                            String temp_boolRadioButtonHigh = documentSnapshot2.getString("boolRadioButtonHigh");
 //                            String temp_boolRadioButtonLow = documentSnapshot2.getString("boolRadioButtonLow");
 //                            String temp_boolRadioButtonMedium = documentSnapshot2.getString("boolRadioButtonMedium");
@@ -506,6 +814,7 @@ public class MainMenu2 extends AppCompatActivity {
                             editor2.putString("priority"+finalI, temp_priority);
                             editor2.putString("done"+finalI, temp_done);
                             editor2.putString("invitationCode"+finalI, temp_invitationCode);
+                            editor2.putString("category"+finalI, temp_category);
 
 //                            if (Objects.equals(temp_boolRadioButtonHigh, "true")){
 //                                editor2.putString("priority"+finalI, "0");
@@ -560,6 +869,8 @@ public class MainMenu2 extends AppCompatActivity {
             if (countTasksRendered != currentCountTasksRendered) {
                 //System.out.println("Есть новые задачи!!!");
                 renderingContainer.removeAllViews();
+//                tasks_completed=0;
+//                tasks_not_completed=0;
                 for (int i = 0; i < currentCountTasksRendered; i++) {
                     CardView newCard = (CardView) LayoutInflater.from(this).inflate(R.layout.task_card, renderingContainer, false);
 
@@ -572,6 +883,15 @@ public class MainMenu2 extends AppCompatActivity {
                     TextView taskDueDateText = newCard.findViewById(R.id.taskDueDate);
                     View priorityIndicator = newCard.findViewById(R.id.priorityIndicator);
                     CheckBox checkBox = newCard.findViewById(R.id.checkBoxTask);
+
+                    /*
+                    if(checkBox.isChecked()){
+                        tasks_completed+=1;
+                    }
+                    else{
+                        tasks_not_completed+=1;
+                    }
+                    */
 
                     titleText.setText(sharedPref2.getString("title_task"+String.valueOf(i), "None"));
 
@@ -586,6 +906,7 @@ public class MainMenu2 extends AppCompatActivity {
                     String bool_done = sharedPref2.getString("done"+String.valueOf(i), "false");
 
                     String temp_string = sharedPref2.getString("deadlineDate"+String.valueOf(i), "None");
+                    String t_cat = sharedPref2.getString("category"+String.valueOf(i), "None");
                     if (!temp_string.equals("Указать дату")) {
                         taskDueDateText.setText(temp_string);
                     }
@@ -629,6 +950,7 @@ public class MainMenu2 extends AppCompatActivity {
                         intent.putExtra("task_date", taskDueDateText.getText().toString());
                         intent.putExtra("priority", temp_priority);
                         intent.putExtra("invitation_cod", temp_invitationCode);
+                        intent.putExtra("category", t_cat);
 
 
                         startActivity(intent);
@@ -690,7 +1012,7 @@ public class MainMenu2 extends AppCompatActivity {
 
     public void clearInputLine(View view) {
         lineSearch.setText("");
-        title.setVisibility(View.VISIBLE);
+        titleWindow.setVisibility(View.VISIBLE);
         imageViewSearch.setVisibility(View.VISIBLE);
         lineSearch.setVisibility(View.GONE);
         buttonClearSearchLine.setVisibility(View.GONE);

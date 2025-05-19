@@ -11,9 +11,9 @@
         <item>Высокий</item>
     </string-array>
     <string-array name="repetition_array">
-        <item>Единоразово</item>
+        <item>Единоразово</item><!--
         <item>Ежедневно</item>
         <item>Еженедельно</item>
-        <item>Месяц</item>
+        <item>Месяц</item>-->
     </string-array>
 </resources>

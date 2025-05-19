@@ -64,6 +64,9 @@ public class DataTask extends AppCompatActivity {
     private String title;
     private String description;
     private String date;
+    private String category;
+    private FrameLayout frameLayoutCategory;
+    private TextView textCategory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +86,8 @@ public class DataTask extends AppCompatActivity {
         text_invitation_cod = findViewById(R.id.text_invitation_cod);
         textDescription = findViewById(R.id.textDescription);
         btnOverflow = findViewById(R.id.btn_overflow);
+        frameLayoutCategory = findViewById(R.id.frameLayoutCategory);
+        textCategory = findViewById(R.id.textCategory);
 
 
         // Создаем PopupMenu
@@ -112,6 +117,10 @@ public class DataTask extends AppCompatActivity {
         date = getIntent().getStringExtra("task_date");
         id_task = getIntent().getStringExtra("id_task");
         invitation_cod = getIntent().getStringExtra("invitation_cod");
+        category = getIntent().getStringExtra("category");
+
+        textCategory.setText("Категория: "+category);
+
 
         // Настраиваем View
         EditText titleView = findViewById(R.id.detail_title);
